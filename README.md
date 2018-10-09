@@ -1,7 +1,7 @@
 # Elastic stack (ELK) on Docker
 
 [![Join the chat at https://gitter.im/deviantony/docker-elk](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/deviantony/docker-elk?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Elastic Stack version](https://img.shields.io/badge/ELK-6.3.0-blue.svg?style=flat)](https://github.com/deviantony/docker-elk/issues/286)
+[![Elastic Stack version](https://img.shields.io/badge/ELK-6.4.0-blue.svg?style=flat)](https://github.com/deviantony/docker-elk/issues/312)
 [![Build Status](https://api.travis-ci.org/deviantony/docker-elk.svg?branch=master)](https://travis-ci.org/deviantony/docker-elk)
 
 Run the latest version of the [Elastic stack](https://www.elastic.co/elk-stack) with Docker and Docker Compose.
@@ -43,12 +43,16 @@ Based on the official Docker images from Elastic:
 6. [JVM tuning](#jvm-tuning)
    * [How can I specify the amount of memory used by a service?](#how-can-i-specify-the-amount-of-memory-used-by-a-service)
    * [How can I enable a remote JMX connection to a service?](#how-can-i-enable-a-remote-jmx-connection-to-a-service)
+7. [Going further](#going-further)
+   * [Using a newer stack version](#using-a-newer-stack-version)
+   * [Plugins and integrations](#plugins-and-integrations)
+   * [Docker Swarm](#docker-swarm)
 
 ## Requirements
 
 ### Host setup
 
-1. Install [Docker](https://www.docker.com/community-edition#/download) version **1.10.0+**
+1. Install [Docker](https://www.docker.com/community-edition#/download) version **17.05+**
 2. Install [Docker Compose](https://docs.docker.com/compose/install/) version **1.6.0+**
 3. Clone this repository
 
@@ -123,7 +127,7 @@ Create an index pattern via the Kibana API:
 ```console
 $ curl -XPOST -D- 'http://localhost:5601/api/saved_objects/index-pattern' \
     -H 'Content-Type: application/json' \
-    -H 'kbn-version: 6.3.0' \
+    -H 'kbn-version: 6.4.0' \
     -d '{"attributes":{"title":"logstash-*","timeFieldName":"@timestamp"}}'
 ```
 
@@ -244,7 +248,7 @@ logstash:
 
 ### How can I enable a remote JMX connection to a service?
 
-As for the Java Heap memory (see above), you can specify JVM options to enable JMX and map the JMX port on the docker
+As for the Java Heap memory (see above), you can specify JVM options to enable JMX and map the JMX port on the Docker
 host.
 
 Update the `{ES,LS}_JAVA_OPTS` environment variable with the following content (I've mapped the JMX service on the port
@@ -257,3 +261,43 @@ logstash:
   environment:
     LS_JAVA_OPTS: "-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.port=18080 -Dcom.sun.management.jmxremote.rmi.port=18080 -Djava.rmi.server.hostname=DOCKER_HOST_IP -Dcom.sun.management.jmxremote.local.only=false"
 ```
+
+## Going further
+
+### Using a newer stack version
+
+To use a different Elastic Stack version than the one currently available in the repository, simply change the version
+number inside the `.env` file, and rebuild the stack with:
+
+```console
+$ docker-compose build
+$ docker-compose up
+```
+
+**NOTE**: Always pay attention to the [upgrade instructions](https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-upgrade.html)
+for each individual component before performing a stack upgrade.
+
+### Plugins and integrations
+
+See the following Wiki pages:
+
+* [External applications](https://github.com/deviantony/docker-elk/wiki/External-applications)
+* [Popular integrations](https://github.com/deviantony/docker-elk/wiki/Popular-integrations)
+
+### Docker Swarm
+
+Experimental support for Docker Swarm is provided in the form of a `docker-stack.yml` file, which can be deployed in an
+existing Swarm cluster using the following command:
+
+```console
+$ docker stack deploy -c docker-stack.yml elk
+```
+
+If all components get deployed without any error, the following command will show 3 running services:
+
+```console
+$ docker stack services elk
+```
+
+**NOTE:** to scale Elasticsearch in Swarm mode, configure *zen* to use the DNS name `tasks.elasticsearch` instead of
+`elasticsearch`.
