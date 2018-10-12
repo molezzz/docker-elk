@@ -17,6 +17,11 @@ services:
       ES_JAVA_OPTS: "-Xmx2g -Xms2g"
     networks:
       - elk
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "10"
 
   logstash:
     build:
@@ -31,6 +36,11 @@ services:
       - "9600:9600"
     environment:
       LS_JAVA_OPTS: "-Xmx512m -Xms512m"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"
     networks:
       - elk
     depends_on:
@@ -45,6 +55,11 @@ services:
       - ./kibana/config/:/usr/share/kibana/config:ro
     ports:
       - "5601:5601"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100k"
+        max-file: "10"
     networks:
       - elk
     depends_on:
