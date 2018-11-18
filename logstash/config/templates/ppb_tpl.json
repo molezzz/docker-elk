@@ -1,5 +1,5 @@
 {
-    "template" : "ppb_tpl", 
+    "template" : "logstash*", 
     "order":1,
     "settings" : { "index.refresh_interval" : "60s" },
     "mappings" : {
