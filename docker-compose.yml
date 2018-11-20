@@ -67,6 +67,21 @@ services:
       - elk
     depends_on:
       - elasticsearch
+  elastichd:
+    image: containerize/elastichd
+    links: 
+      - elasticsearch
+    ports:
+      - "9800:9800"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100k"
+        max-file: "10"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
 
 networks:
 
