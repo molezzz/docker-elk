@@ -15,14 +15,14 @@ services:
       - "9200:9200"
       - "9300:9300"
     environment:
-      ES_JAVA_OPTS: "-XX:UseAVX=2 -Xmx4g -Xms4g"
+      ES_JAVA_OPTS: "-XX:UseAVX=2 -Xmx6g -Xms6g"
     networks:
       - elk
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
-        max-file: "10"
+        max-file: "100"
 
   logstash:
     build:
@@ -69,7 +69,7 @@ services:
       - elasticsearch
   elastichd:
     image: containerize/elastichd
-    links: 
+    links:
       - elasticsearch
     ports:
       - "9800:9800"
