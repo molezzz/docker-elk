@@ -15,7 +15,7 @@ services:
       - "9200:9200"
       - "9300:9300"
     environment:
-      ES_JAVA_OPTS: "-XX:UseAVX=2 -Xmx6g -Xms6g"
+      ES_JAVA_OPTS: "-XX:UseAVX=2 -Xmx8g -Xms8g"
     networks:
       - elk
     logging:
